@@ -3,7 +3,7 @@ from flask import Flask, render_template, abort, redirect, url_for, request, mak
 import random, string
 
 app = Flask(__name__)
-app.secret_key = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
+app.secret_key = b'sdvsdkdsfdaw4ttgsdvzdgwtasq242'
 
 @app.route('/')
 def test(token=None):
