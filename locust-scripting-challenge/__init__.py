@@ -54,14 +54,14 @@ def create_app(test_config=None):
 
     @app.route('/api/html_extract/<lowest_item>')
     def html_extract(lowest_item=None):
-        #just capture - not verify it...
+        print(list_of_items)
         if lowest_item in list_of_items:
             list_of_items.remove(lowest_item)
             cookie = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
             list_of_cookies.append(cookie)
             return 'custom_cookie=' + cookie + ''
         else:
-            abort(400)  
+            abort(400)
 
     @app.route('/api/cookie')
     def parse_cookie():
