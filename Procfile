@@ -1,1 +1,1 @@
-web: gunicorn wsgi:locust_scripting_challenge
+web: python locust_scripting_challenge runserver 0.0.0.0:5000
