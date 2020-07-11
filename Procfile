@@ -1,1 +1,1 @@
-web: gunicorn app:locust-scripting-challenge
+web: gunicorn locust-scripting-challenge:create_app()
