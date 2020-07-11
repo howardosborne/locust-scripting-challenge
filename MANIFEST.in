@@ -1,2 +1,2 @@
-graft locust_scripting_challenge/templates
+graft locust-scripting-challenge/templates
 global-exclude *.pyc
