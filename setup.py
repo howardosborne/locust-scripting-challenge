@@ -5,7 +5,7 @@ setup(
     version='0.1.0',
     packages=['locust-scripting-challenge'],
     description='A challenge to help learn how to write a performance test script',
-    url='https://github.com/howardosborne/locust-scripting-challenge',
+    url='https://github.com/howardosborne/locust-scripting-challenge.git',
     author='Howard Osborne',
     author_email='howardosborneconsulting@gmail.com',
     license='MIT',

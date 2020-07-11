@@ -1,1 +1,1 @@
-web: python ./locust-scripting-challenge/app.py runserver 0.0.0.0:5000
+web: python ./locust-scripting-challenge runserver 0.0.0.0:5000
