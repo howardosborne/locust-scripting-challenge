@@ -1,0 +1,1 @@
+web: gunicorn wsgi:locust_scripting_challenge
