@@ -13,9 +13,11 @@ list_of_headers = []
 def create_app(test_config=None):
     app = Flask(__name__)
 
+
     @app.route('/')
     def test(token=None):
         token = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
+        global one_time_tokens
         one_time_tokens.append(token)
         return render_template('test.html', token=token)
 
@@ -25,8 +27,10 @@ def create_app(test_config=None):
         #if so, return an item_id in json format
         token = request.args.get('token', '')
         username = request.args.get('username', '')
+        global one_time_tokens
         if token in one_time_tokens:
             one_time_tokens.remove(token)
+            global tokens
             tokens[token] = username
             response_text = '{"status":"OK", "item_id":"' + ''.join(random.choices(string.digits, k=10)) + '"}'
             resp = make_response(response_text)
@@ -49,15 +53,18 @@ def create_app(test_config=None):
             item_list.append(''.join(random.choices(string.digits, k=7)))
         html_list = '</li><li>'.join(item_list)
         lowest_item = sorted(item_list)[0]
+        global list_of_items
         list_of_items.append(lowest_item)
         return '<ul><li>' + html_list + '</li></ul>'
 
     @app.route('/api/html_extract/<lowest_item>')
     def html_extract(lowest_item=None):
+        global list_of_items
         print(list_of_items)
         if lowest_item in list_of_items:
             list_of_items.remove(lowest_item)
             cookie = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
+            global list_of_cookies
             list_of_cookies.append(cookie)
             return 'custom_cookie=' + cookie + ''
         else:
@@ -67,9 +74,11 @@ def create_app(test_config=None):
     def parse_cookie():
         #look for cookie
         cookie = request.cookies.get('custom_cookie')
+        global list_of_cookies
         if cookie in list_of_cookies:
             list_of_cookies.remove(cookie)
             header = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
+            global list_of_headers
             list_of_headers.append(header)
             return header 
         else:
@@ -79,7 +88,9 @@ def create_app(test_config=None):
     def parse_header():
         #look for cookie
         header = request.headers.get('custom_header')
+        global tokens
         username = tokens[request.cookies.get("token")]
+        global list_of_headers
         if header in list_of_headers:
             list_of_headers.remove(header)
             del tokens[request.cookies.get("token")]
