@@ -3,18 +3,17 @@ from flask import Flask, render_template, abort, redirect, url_for, request, mak
 import random, string
 
 app = Flask(__name__)
-
-#might want to think about how to stop these lists from getting very large...
-session['one_time_tokens'] = []
-session['tokens'] = {}
-session['list_of_items'] = []
-session['list_of_cookies'] = []
-session['list_of_headers'] = []
+app.secret_key = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
 
 @app.route('/')
 def test(token=None):
+    session['one_time_tokens'] = ""
+    session['username'] = ""
+    session['list_of_items'] = ""
+    session['list_of_cookies'] = ""
+    session['list_of_headers'] = ""
     token = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
-    session['one_time_tokens'].append(token)
+    session['one_time_tokens'] = token
     return render_template('test.html', token=token)
 
 @app.route('/api/verify_correlation')
@@ -24,9 +23,8 @@ def verify_correlation():
     token = request.args.get('token', '')
     username = request.args.get('username', '')
     print(session['one_time_tokens'])
-    if token in session['one_time_tokens']:
-        session['one_time_tokens'].remove(token)
-        session['tokens'][token] = username
+    if token == session['one_time_tokens']:
+        session['username'] = username
         response_text = '{"status":"OK", "item_id":"' + ''.join(random.choices(string.digits, k=10)) + '"}'
         resp = make_response(response_text)
         resp.set_cookie('token', token)
@@ -48,16 +46,15 @@ def urlencoded(message=None):
         item_list.append(''.join(random.choices(string.digits, k=7)))
     html_list = '</li><li>'.join(item_list)
     lowest_item = sorted(item_list)[0]
-    session['list_of_items'].append(lowest_item)
+    session['list_of_items'] = lowest_item
     return '<ul><li>' + html_list + '</li></ul>'
 
 @app.route('/api/html_extract/<lowest_item>')
 def html_extract(lowest_item=None):
     print(session['list_of_items'])
-    if lowest_item in session['list_of_items']:
-        session['list_of_items'].remove(lowest_item)
+    if session['list_of_items'] == lowest_item:
         cookie = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
-        session['list_of_cookies'].append(cookie)
+        session['list_of_cookies'] = cookie
         return 'custom_cookie=' + cookie + ''
     else:
         abort(400)
@@ -66,10 +63,9 @@ def html_extract(lowest_item=None):
 def parse_cookie():
     #look for cookie
     cookie = request.cookies.get('custom_cookie')
-    if cookie in session['list_of_cookies']:
-        session['list_of_cookies'].remove(cookie)
+    if session['list_of_cookies'] == cookie:
         header = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
-        session['list_of_headers'].append(header)
+        session['list_of_headers'] = header
         return header 
     else:
         abort(400) 
@@ -78,10 +74,7 @@ def parse_cookie():
 def parse_header():
     #look for cookie
     header = request.headers.get('custom_header')
-    username = session['tokens'][request.cookies.get("token")]
-    if header in session['list_of_headers']:
-        session['list_of_headers'].remove(header)
-        del session['tokens'][request.cookies.get("token")]
-        return f'Well done {username}'
+    if session['list_of_headers'] == header:
+        return f'Well done {session["username"]}'
     else:
         abort(400) 
