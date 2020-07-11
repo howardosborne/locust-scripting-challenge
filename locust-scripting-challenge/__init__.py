@@ -13,7 +13,6 @@ list_of_headers = []
 def create_app(test_config=None):
     app = Flask(__name__)
 
-
     @app.route('/')
     def test(token=None):
         token = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
@@ -28,6 +27,7 @@ def create_app(test_config=None):
         token = request.args.get('token', '')
         username = request.args.get('username', '')
         global one_time_tokens
+        print(one_time_tokens)
         if token in one_time_tokens:
             one_time_tokens.remove(token)
             global tokens
