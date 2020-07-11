@@ -2,15 +2,16 @@ import os
 from flask import Flask, render_template, abort, redirect, url_for, request, make_response, jsonify
 import random, string
 
+#might want to think about how to stop these lists from getting very large...
+one_time_tokens = []
+tokens = {}
+list_of_items = []
+list_of_cookies = []
+list_of_headers = []
+
+
 def create_app(test_config=None):
     app = Flask(__name__)
-
-    #might want to think about how to stop these lists from getting very large...
-    one_time_tokens = []
-    tokens = {}
-    list_of_items = []
-    list_of_cookies = []
-    list_of_headers = []
 
     @app.route('/')
     def test(token=None):
