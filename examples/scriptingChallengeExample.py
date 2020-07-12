@@ -67,7 +67,8 @@ class TestTaskSet(SequentialTaskSet):
 
 class TakeTest(HttpUser):
     wait_time = constant(1)
-    host = "http://localhost:5000"
+    #host = "http://localhost:5000"
+    host = "https://locust-scripting-challenge.herokuapp.com"
     tasks = [TestTaskSet]
 
 #set up logging

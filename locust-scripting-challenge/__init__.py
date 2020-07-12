@@ -36,7 +36,7 @@ def verify_correlation():
 def parse_json():
     #just going to parse it - not verify it...
     item_id = request.get_json()['item_id']
-    return 'So long and thanks for all the fish'
+    return 'So long, and thanks for all the fish!'
 
 @app.route('/api/urlencoded/<message>')
 def urlencoded(message=None):
