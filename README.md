@@ -1,6 +1,3 @@
-# Scripting Challenge
-A challenge to help learn how to write a performance test script
-
 This project is designed to help learn how to write performance test scripts. The focus in on writing scripts for [locust.io](https://locust.io) but it could be used to learn about scripting with any tool.
 
 It runs on [Flask](https://flask.palletsprojects.com/en/1.1.x/quickstart/), which is the same python-based technology used for the Locust web interface.
