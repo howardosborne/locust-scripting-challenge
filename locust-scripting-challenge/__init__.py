@@ -127,6 +127,3 @@ def submit_script():
         </form>
     </div>
     '''
-@app.route('/challenge_met')
-def submit_script():
-    return "challenge_met!"
