@@ -1,9 +1,4 @@
-import gevent
-from locust.env import Environment
-from locust.stats import stats_printer
-from locust.log import setup_logging
 from locust import SequentialTaskSet, task, constant, HttpUser
-from flask import request
 import random, string, re, json
 from lxml import html, etree
 
@@ -67,31 +62,5 @@ class TestTaskSet(SequentialTaskSet):
 
 class TakeTest(HttpUser):
     wait_time = constant(1)
-    #host = "http://localhost:5000"
     host = "https://locust-scripting-challenge.herokuapp.com"
     tasks = [TestTaskSet]
-
-#set up logging
-setup_logging("INFO", None)
-
-
-# setup Environment and Runner
-env = Environment(user_classes=[TakeTest])
-
-#create a local runner
-env.create_local_runner()
-env.create_web_ui("127.0.0.1", 8089)
-
-# start a greenlet that periodically outputs the current stats
-#gevent.spawn(stats_printer(env.stats))
-
-# start the test
-env.runner.start(50, hatch_rate=1)
-
-gevent.spawn_later(120, lambda: env.runner.quit())
-
-# wait for the greenlets
-env.runner.greenlet.join()
-
-# stop the web server for good measures
-env.web_ui.stop()
