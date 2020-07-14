@@ -76,7 +76,8 @@ def parse_header():
     #look for cookie
     header = request.headers.get('custom_header')
     if session['list_of_headers'] == header:
-        return f'<p>Well done {session["username"]}.</p><p> When you have written your script, submit it <a href="/submit_script">here</a> and if it passes, you\'ll appear on the <a href="/challenge_met">Challenge Met</a> board.</p>'
+        #return f'<p>Well done {session["username"]}.</p><p> When you have written your script, submit it <a href="/submit_script">here</a> and if it passes, you\'ll appear on the <a href="/challenge_met">Challenge Met</a> board.</p>'
+        return f'<p>Well done {session["username"]}.'
     else:
         abort(400) 
 
