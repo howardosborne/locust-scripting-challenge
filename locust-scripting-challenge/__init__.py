@@ -80,7 +80,7 @@ def parse_header():
     else:
         abort(400) 
 
-UPLOAD_FOLDER = '.'
+UPLOAD_FOLDER = '/app'
 ALLOWED_EXTENSIONS = {'py'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
