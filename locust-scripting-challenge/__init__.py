@@ -1,5 +1,6 @@
 import os
-from flask import Flask, render_template, abort, redirect, url_for, request, make_response, jsonify, session
+from flask import Flask, flash, render_template, abort, redirect, url_for, request, make_response, jsonify, session
+from werkzeug.utils import secure_filename
 import random, string
 
 app = Flask(__name__)
@@ -75,6 +76,57 @@ def parse_header():
     #look for cookie
     header = request.headers.get('custom_header')
     if session['list_of_headers'] == header:
-        return f'Well done {session["username"]}'
+        return f'<p>Well done {session["username"]}.</p><p> When you have written your script, submit it <a href="/submit_script">here</a> and if it passes, you\'ll appear on the <a href="/challenge_met">Challenge Met</a> board.</p>'
     else:
         abort(400) 
+
+UPLOAD_FOLDER = '.'
+ALLOWED_EXTENSIONS = {'py'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route('/submit_script', methods=['GET', 'POST'])
+def submit_script():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            new_folder = 'test_script_' + ''.join(random.choices(string.ascii_lowercase, k=5))
+            appended_path = os.path.join(app.config['UPLOAD_FOLDER'], new_folder)
+            os.mkdir(appended_path)
+            full_pathname = os.path.join(app.config['UPLOAD_FOLDER'], new_folder, filename)
+            status_filename = os.path.join(app.config['UPLOAD_FOLDER'], new_folder, "status.json")
+            file.save(full_pathname)
+            username = request.form['username']
+            status_output = f'{{status:"uploaded",id:"{new_folder}",username:{username}}}'
+            status_file = open(status_filename,"w")
+            status_file.write(status_output)
+            return f'Thanks'
+    return '''
+    <div class="form-group">
+        <form method=post enctype=multipart/form-data action="/submit_script">
+            <label for="file">script</label>
+            <input class="form-control" type=file name="file">
+            <label for="username">Name (publicly visible)</label>
+            <input class="form-control" id="username" name="username">
+            <input type=submit value=Upload>
+        </form>
+    </div>
+    '''
+@app.route('/challenge_met')
+def submit_script():
+    return "challenge_met!"
