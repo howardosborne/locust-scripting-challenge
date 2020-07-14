@@ -115,7 +115,7 @@ def submit_script():
             status_output = f'{{status:"uploaded",id:"{new_folder}",username:{username}}}'
             status_file = open(status_filename,"w")
             status_file.write(status_output)
-            return f'Thanks'
+            return f'{status_filename}'
     return '''
     <div class="form-group">
         <form method=post enctype=multipart/form-data action="/submit_script">
