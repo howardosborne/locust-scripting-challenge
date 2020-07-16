@@ -58,7 +58,7 @@ def submit_script():
         username = request.form['username']
         meta_data = {"username": username}
 
-        requests.post("https://adhoc-file-server.herokuapp.com/scripting-challenge/submit_script", meta_data, files=file)
+        requests.post("https://adhoc-file-server.herokuapp.com/scripting-challenge/submit_script", data=meta_data, files=request.files)
         #new_folder = 'test_' + ''.join(random.choices(string.ascii_lowercase, k=5))
         #appended_path = os.path.join(app.config['UPLOAD_FOLDER'], new_folder)
         #os.mkdir(appended_path)
