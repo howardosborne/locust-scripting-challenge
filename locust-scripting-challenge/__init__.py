@@ -43,13 +43,10 @@ def upload():
 
 @app.route('/submit_script', methods=['POST'])
 def submit_script():
-    # check if the post request has the file part
     if 'file' not in request.files:
         flash('No file part')
         return render_template('upload.html')
     file = request.files['file']
-    # if user does not select file, browser also
-    # submit an empty part without filename
     if file.filename == '':
         flash('No selected file')
         return render_template('upload.html')
@@ -57,18 +54,9 @@ def submit_script():
         filename = secure_filename(file.filename)
         username = request.form['username']
         meta_data = {"username": username}
-
-        requests.post("https://adhoc-file-server.herokuapp.com/scripting-challenge/submit_script", data=meta_data, files=request.files)
-        #new_folder = 'test_' + ''.join(random.choices(string.ascii_lowercase, k=5))
-        #appended_path = os.path.join(app.config['UPLOAD_FOLDER'], new_folder)
-        #os.mkdir(appended_path)
-        #full_pathname = os.path.join(app.config['UPLOAD_FOLDER'], new_folder, filename)
-        #status_filename = os.path.join(app.config['UPLOAD_FOLDER'], new_folder, "status.json")
-        #file.save(full_pathname)
-        #username = request.form['username']
-        #status_output = f'{{status:"saved",id:"{new_folder}",username:{username}}}'
-        #status_file = open(status_filename,"w")
-        #status_file.write(status_output)
+        url = "https://adhoc-file-server.herokuapp.com/scripting-challenge/submit_script"
+        files = {'file': (file.filename, file.read())}
+        requests.post(url, data=meta_data, files=files)
         return render_template('challenge_board.html')
     else:
         return render_template('upload.html')
