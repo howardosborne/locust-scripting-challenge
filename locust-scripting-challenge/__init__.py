@@ -1,10 +1,26 @@
-import os
+import os, subprocess, glob
 from flask import Flask, flash, render_template, abort, redirect, url_for, request, make_response, jsonify, session
+import requests
 from werkzeug.utils import secure_filename
 import random, string
 
 app = Flask(__name__)
 app.secret_key = b'sdvsdkdsfdaw4ttgsdvzdgwtasq242'
+
+if os.name == 'nt':
+    UPLOAD_FOLDER = "./uploads"
+else:
+    UPLOAD_FOLDER = '/app/uploads'
+ALLOWED_EXTENSIONS = {'py'}
+#if the upload folder doesn't exist, add it
+if not os.path.isdir(UPLOAD_FOLDER):
+    os.mkdir(UPLOAD_FOLDER)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/')
 def test(token=None):
@@ -16,6 +32,48 @@ def test(token=None):
     token = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
     session['one_time_tokens'] = token
     return render_template('test.html', token=token)
+
+@app.route('/challenge_board')
+def challenge_board():
+    return render_template('challenge_board.html')
+
+@app.route('/upload')
+def upload():
+    return render_template('upload.html')
+
+@app.route('/submit_script', methods=['POST'])
+def submit_script():
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        flash('No file part')
+        return render_template('upload.html')
+    file = request.files['file']
+    # if user does not select file, browser also
+    # submit an empty part without filename
+    if file.filename == '':
+        flash('No selected file')
+        return render_template('upload.html')
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        username = request.form['username']
+        meta_data = {"username": username}
+
+        requests.post("https://adhoc-file-server.herokuapp.com/scripting-challenge/submit_script", meta_data, files=file)
+        #new_folder = 'test_' + ''.join(random.choices(string.ascii_lowercase, k=5))
+        #appended_path = os.path.join(app.config['UPLOAD_FOLDER'], new_folder)
+        #os.mkdir(appended_path)
+        #full_pathname = os.path.join(app.config['UPLOAD_FOLDER'], new_folder, filename)
+        #status_filename = os.path.join(app.config['UPLOAD_FOLDER'], new_folder, "status.json")
+        #file.save(full_pathname)
+        #username = request.form['username']
+        #status_output = f'{{status:"saved",id:"{new_folder}",username:{username}}}'
+        #status_file = open(status_filename,"w")
+        #status_file.write(status_output)
+        return render_template('challenge_board.html')
+    else:
+        return render_template('upload.html')
+
+#test_steps
 
 @app.route('/api/verify_correlation')
 def verify_correlation():
@@ -77,54 +135,19 @@ def parse_header():
     header = request.headers.get('custom_header')
     if session['list_of_headers'] == header:
         #return f'<p>Well done {session["username"]}.</p><p> When you have written your script, submit it <a href="/submit_script">here</a> and if it passes, you\'ll appear on the <a href="/challenge_met">Challenge Met</a> board.</p>'
-        return f'<p>Well done {session["username"]}.'
+        return f'<p>Well done {session["username"]}. When you have written your script, upload it <a href="/upload">here</a>.'
     else:
         abort(400) 
 
-UPLOAD_FOLDER = '/app'
-ALLOWED_EXTENSIONS = {'py'}
+#for getting files that have been uploaded
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+@app.route('/api/uploads')
+def uploads():
+    glob_pattern = os.path.join(app.config['UPLOAD_FOLDER'],"*","*.py")
+    return jsonify(glob.glob(glob_pattern))
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-@app.route('/submit_script', methods=['GET', 'POST'])
-def submit_script():
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # if user does not select file, browser also
-        # submit an empty part without filename
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            new_folder = 'test_script_' + ''.join(random.choices(string.ascii_lowercase, k=5))
-            appended_path = os.path.join(app.config['UPLOAD_FOLDER'], new_folder)
-            os.mkdir(appended_path)
-            full_pathname = os.path.join(app.config['UPLOAD_FOLDER'], new_folder, filename)
-            status_filename = os.path.join(app.config['UPLOAD_FOLDER'], new_folder, "status.json")
-            file.save(full_pathname)
-            username = request.form['username']
-            status_output = f'{{status:"uploaded",id:"{new_folder}",username:{username}}}'
-            status_file = open(status_filename,"w")
-            status_file.write(status_output)
-            return f'{status_filename}'
-    return '''
-    <div class="form-group">
-        <form method=post enctype=multipart/form-data action="/submit_script">
-            <label for="file">script</label>
-            <input class="form-control" type=file name="file">
-            <label for="username">Name (publicly visible)</label>
-            <input class="form-control" id="username" name="username">
-            <input type=submit value=Upload>
-        </form>
-    </div>
-    '''
+@app.route('/api/uploaded_script/<test_folder>/<filename>')
+def uploaded_script(test_folder=None,filename=None):
+    #think about removing anything potentially malicious
+    file_contents = open(os.path.join(app.config['UPLOAD_FOLDER'], test_folder, filename)).read()
+    return file_contents

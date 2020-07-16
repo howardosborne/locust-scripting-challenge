@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <title>Scripting Test</title>
+    <!--<script src="../static/app.js"></script>-->
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-163670574-3"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-163670574-3');
+    </script>
+  </head>
+  <body onload="start()">
+    <div class="container">
+      <div class="py-5 text-center">
+        <h2>Scripting Skills Challenge</h2>
+        <p class="lead">Submit your script here and if it passes, you can appear here on the Challenge Met! board.</p>
+      </div>
+      <div class="row">
+        <div>
+          <form method="post" enctype="multipart/form-data" action="/submit_script">
+            <div class="row">
+              <div class="col-6"><label for="username">Name (as you want it to appear)</label></div>
+              <div class="col-6"><input type="text" class="form-control" id="username" name="username"></div>
+            </div>  
+            <div class="row">
+              <div class="col-6"><label for="file">Test Script</label></div>
+              <div class="col-6"><input type=file name="file"></div>
+            </div>      
+            <div class="row">
+              <div class="col-6"></div>
+              <div class="col-6"><input type=submit value="Submit"></div>        
+            
+          </div>
+          </form>
+        </div>
+          <div class="col-8">
+          </div>
+        </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  </body>
+</html>
+
