@@ -35,7 +35,14 @@ def test(token=None):
 
 @app.route('/challenge_board')
 def challenge_board():
-    return render_template('challenge_board.html')
+    import json
+    response = requests.get('https://adhoc-results-server.herokuapp.com/results/get/4')
+    completed = "<ul>"
+    json_response = json.loads(response.text)
+    for item in json_response:
+        completed += "<li>" + item['name'] + "</li>"
+    completed += "</ul>"
+    return render_template('challenge_board.html', completed=completed)
 
 @app.route('/upload')
 def upload():
@@ -122,8 +129,8 @@ def parse_header():
     #look for cookie
     header = request.headers.get('custom_header')
     if session['list_of_headers'] == header:
-        #return f'<p>Well done {session["username"]}.</p><p> When you have written your script, submit it <a href="/submit_script">here</a> and if it passes, you\'ll appear on the <a href="/challenge_met">Challenge Met</a> board.</p>'
-        return f'<p>Well done {session["username"]}. When you have written your script, upload it <a href="/upload">here</a>.'
+        #return f'<p>Well done {session["username"]}. When you have written your script, upload it <a href="/upload">here</a>.'
+        return f'<p>Well done {session["username"]}.'
     else:
         abort(400) 
 
